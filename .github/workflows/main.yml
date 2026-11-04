@@ -5,7 +5,7 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     defaults:
       run:
         shell: powershell
@@ -15,6 +15,15 @@ jobs:
         with:
           repository: pwntester/ysoserial.net
           path: ysoserial.net
+
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v2
+        with:
+          nuget-version: '6.x'
+
+      - name: Restore NuGet Packages
+        run: nuget restore ysoserial.sln
+        working-directory: ./ysoserial.net
 
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
