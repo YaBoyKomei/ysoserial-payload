@@ -20,7 +20,7 @@ jobs:
         uses: microsoft/setup-msbuild@v2
 
       - name: Build ysoserial.net
-        run: msbuild ysoserial.net.sln /p:Configuration=Release
+        run: msbuild ysoserial.sln /p:Configuration=Release
         working-directory: ./ysoserial.net
 
       - name: Generate Payload
